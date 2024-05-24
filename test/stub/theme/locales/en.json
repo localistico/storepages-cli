@@ -1,0 +1,9 @@
+{
+  "general": {
+    "404": {
+      "title": "Page not found",
+      "subtitle": "Sorry, we couldn't find this page."
+    },
+    "example": "Example with {{var1}} y {{var2}}"
+  }
+}

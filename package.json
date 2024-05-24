@@ -1,0 +1,30 @@
+{
+  "name": "storepages-cli",
+  "version": "1.0.0",
+  "description": "Command-line interface tool for local development of store pages themes.",
+  "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test-watch": "vitest watch"
+  },
+  "bin": {
+    "storepages": "./bin/cli.js"
+  },
+  "repository": "https://github.com/localistico/storepages-cli.git",
+  "author": "contact@localistico.com",
+  "license": "ISC",
+  "dependencies": {
+    "browser-sync": "^3.0.2",
+    "commander": "^12.1.0",
+    "csv-parse": "^5.5.6",
+    "esbuild": "^0.21.3",
+    "liquidjs": "^10.13.0",
+    "zip-a-folder": "^3.1.6"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0"
+  }
+}
