@@ -96,6 +96,10 @@ In case you want to preview the same data than the platform you need to download
 - `administrative_area_level1.json`
 - `country.json`
 
+### The `src` directory
+
+Powered by [esbuild](https://esbuild.github.io/) you can transform and bundle any JavaScript, CSS, TypeScript, and JSX files in this directory into the `assets` folder. Sourcemap is enabled in development mode and only root files are compiled.
+
 ## Run the development server
 
 1. Run `npm run dev` to start the development server.
