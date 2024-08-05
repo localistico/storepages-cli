@@ -95,6 +95,8 @@ In case you want to preview the same data than the platform you need to download
 - `administrative_area_level2.json`
 - `administrative_area_level1.json`
 - `country.json`
+- `widget_locator.json`
+- `widget_store.json`
 
 ### The `src` directory
 

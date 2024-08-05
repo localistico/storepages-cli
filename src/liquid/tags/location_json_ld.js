@@ -36,11 +36,11 @@ export default {
           "postalCode": "{{ location.postcode | escape | strip }}",
           "addressLocality": "{{ location.locality | escape | strip }}",
           "addressRegion": "{{ location.region | escape | strip }}",
-          "addressCountry": "{{ location.country_code | escape | strip }}",
+          "addressCountry": "{{ location.country_code | escape | strip }}"
         },
         "identifier": "{{location.id}}",
         "name": "{{ ${
-          this.params['name'] || 'location.name'
+          this.params['name'] ? `"${this.params['name']}"` : 'location.name'
         } | escape | strip }}",
         "image": "{{ business.logo.original }}",
         "telephone": "{{ location.phone | escape | strip }}",
@@ -52,13 +52,13 @@ export default {
         "url": "{% find_page_url ${
           this.params['template_key'] || 'store-page'
         } location.id %}",
-        "openingHoursSpecification": [{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"09:00","closes":"21:00"}],
+        "openingHoursSpecification": [{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"09:00","closes":"21:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"09:00","closes":"21:00"}],
         "sameAs": ["https://maps.apple.com/", "https://www.bing.com/maps", "https://maps.google.com", "https://facebook.com"],
         "geo": {
           "@type": "GeoCoordinates",
           "latitude": "{{location.lat}}",
-          "longitude": "{{location.lng}}",
-        },
+          "longitude": "{{location.lng}}"
+        }
       }`,
       ctx
     )

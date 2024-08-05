@@ -1,4 +1,3 @@
-
 {
   "canonical_tag": "<link rel=\"canonical\" href=\"https://office.localistico.com/localistico-madrid-hq\" />",
   "canonical_url": "https://office.localistico.com/localistico-madrid-hq",
@@ -38,7 +37,7 @@
     "country_code": "ES",
     "phone": "+34965020305",
     "website": "https://localistico.com/?utm_content=Localistico+Madrid+HQ&utm_medium=09e44007-9cf9-4ced-adb1-786f6206cc6b&utm_source=store_pages",
-    "summary": null,
+    "summary": "La plataforma de marketing local y analítica que te ayuda a llevar más clientes de online a offline.",
     "short_summary": "La plataforma de marketing local y analítica que te ayuda a llevar más clientes de online a offline.",
     "closed": false,
     "created_at": "2019-05-16 09:14:40 UTC",
@@ -428,9 +427,7 @@
           }
         ]
       },
-      "images": [
-
-      ],
+      "images": [],
       "full_address": "Calle Mazarredo, 9<br />\n28005 Madrid<br />\nMadrid, ES",
       "national_phone_number": "965 02 03 05",
       "international_phone_number": "+34 965 02 03 05",
@@ -668,27 +665,21 @@
       "display_name": "Centro, Madrid, Área metropolitana de Madrid y Corredor del Henares, Comunidad de Madrid, 28001, España",
       "type": "locality",
       "slug": "centro",
-      "pages": [
-
-      ]
+      "pages": []
     },
     {
       "name": "Comunidad de Madrid",
       "display_name": "Comunidad de Madrid, España",
       "type": "region",
       "slug": "comunidad-de-madrid",
-      "pages": [
-
-      ]
+      "pages": []
     },
     {
       "name": "España",
       "display_name": "España",
       "type": "country",
       "slug": "espana",
-      "pages": [
-
-      ]
+      "pages": []
     }
   ]
 }
