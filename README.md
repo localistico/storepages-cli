@@ -16,7 +16,7 @@ Since our plugin is a NPM package but not in a public packages server, the packa
 ```
 "dependencies": {
   ...
-  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:1.0.0"
+  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:1.3.0"
   ...
 }
 ```
@@ -101,6 +101,16 @@ In case you want to preview the same data than the platform you need to download
 ### The `src` directory
 
 Powered by [esbuild](https://esbuild.github.io/) you can transform and bundle any JavaScript, CSS, TypeScript, and JSX files in this directory into the `assets` folder. Sourcemap is enabled in development mode and only root files are compiled.
+
+Use a custom esbuild config with `--esbuild-config` or a default `esbuild.config.js` file in the root of your project directory
+
+```
+const esbuildConfig = {
+  /* config options here */
+}
+
+export default esbuildConfig
+```
 
 ## Run the development server
 

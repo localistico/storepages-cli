@@ -4,11 +4,19 @@ import { templatesMiddleware, notFoundMiddleware } from './liquid/middleware.js'
 import { context } from 'esbuild'
 import { getConfig } from './build.js'
 
-export default async function ({ themePath, sourcePath, dataPath }) {
+export default async function (
+  { themePath, sourcePath, dataPath, esbuildConfig },
+  command
+) {
   const bs = create()
   if (existsSync(sourcePath)) {
-    const esbuildConfig = getConfig(themePath, sourcePath)
-    const ctx = await context(esbuildConfig)
+    const buildConfig = await getConfig(
+      command.name(),
+      themePath,
+      sourcePath,
+      esbuildConfig
+    )
+    const ctx = await context(buildConfig)
     await ctx.rebuild()
     bs.watch(
       `${sourcePath}/**/*.{js,ts,jsx,tsx}`,

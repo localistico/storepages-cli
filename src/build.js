@@ -1,11 +1,18 @@
 import { existsSync } from 'node:fs'
 import { cpSync, rmSync } from 'node:fs'
 import { basename } from 'node:path'
+import { pathToFileURL } from 'url'
 import { zip } from 'zip-a-folder'
 import { build } from 'esbuild'
 
-export function getConfig(themePath, sourcePath, sourceMap = 'inline') {
-  return {
+export async function getConfig(
+  command,
+  themePath,
+  sourcePath,
+  esbuildConfig,
+  sourceMap = 'inline'
+) {
+  const defaultConfig = {
     entryPoints: [
       `${sourcePath}/*.js`,
       `${sourcePath}/*.ts`,
@@ -17,12 +24,34 @@ export function getConfig(themePath, sourcePath, sourceMap = 'inline') {
     logLevel: 'silent',
     outdir: `${themePath}/assets`,
   }
+  if (existsSync(esbuildConfig)) {
+    const { default: config } = await import(pathToFileURL(esbuildConfig))
+    const customConfig =
+      typeof config === 'function'
+        ? await config(command, defaultConfig)
+        : config
+
+    return {
+      ...defaultConfig,
+      ...customConfig,
+    }
+  }
+  return defaultConfig
 }
 
-export default async function ({ themePath, sourcePath, buildPath, minify }) {
+export default async function (
+  { themePath, sourcePath, buildPath, esbuildConfig, minify },
+  command
+) {
   if (existsSync(sourcePath)) {
-    const esbuildConfig = getConfig(themePath, sourcePath, false)
-    await build(esbuildConfig)
+    const buildConfig = await getConfig(
+      command.name(),
+      themePath,
+      sourcePath,
+      esbuildConfig,
+      false
+    )
+    await build(buildConfig)
   }
   rmSync(buildPath, { force: true, recursive: true })
   const buildThemePath = `${buildPath}/${basename(themePath)}`

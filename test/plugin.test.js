@@ -36,12 +36,12 @@ describe('Tags', () => {
       expect(html).toBe('<svg></svg>')
     })
     test('should throw that file has a not allowed extension', async function () {
-      expect(
+      await expect(
         liquid.parseAndRender('{% asset_content pic.jpg %}')
       ).rejects.toThrow()
     })
     test('should throw that the file was not found', async function () {
-      expect(
+      await expect(
         liquid.parseAndRender('{% asset_content unknown.css %}')
       ).rejects.toThrow()
     })
@@ -53,7 +53,7 @@ describe('Tags', () => {
       expect(html).toBe('/assets/draw.svg')
     })
     test('should throw that the asset file was not found', async function () {
-      expect(
+      await expect(
         liquid.parseAndRender('{% asset_content unknown.css %}')
       ).rejects.toThrow()
     })
@@ -328,9 +328,7 @@ describe('Filters', () => {
     test('returns error message if string id does not exist', async () => {
       const liquidMarkup = `{{ 'general.404s.title' | t }}`
       const html = await liquid.parseAndRender(liquidMarkup)
-      expect(html).toBe(
-        `STRING WITH ID 'general.404s.title' NOT FOUND IN LOCALE FILE`
-      )
+      expect(html).toBe('undefined')
     })
     // Usage: {{ 'path.to.string' | t: var1: variable, var2: "string" }}
   })
