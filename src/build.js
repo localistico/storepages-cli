@@ -5,13 +5,7 @@ import { pathToFileURL } from 'url'
 import { zip } from 'zip-a-folder'
 import { build } from 'esbuild'
 
-export async function getConfig(
-  command,
-  themePath,
-  sourcePath,
-  esbuildConfig,
-  sourceMap = 'inline'
-) {
+export async function getConfig(command, themePath, sourcePath, esbuildConfig) {
   const defaultConfig = {
     entryPoints: [
       `${sourcePath}/*.js`,
@@ -20,7 +14,7 @@ export async function getConfig(
       `${sourcePath}/*.tsx`,
     ],
     bundle: true,
-    sourcemap: sourceMap,
+    sourcemap: 'inline',
     logLevel: 'silent',
     outdir: `${themePath}/assets`,
   }
@@ -48,8 +42,7 @@ export default async function (
       command.name(),
       themePath,
       sourcePath,
-      esbuildConfig,
-      false
+      esbuildConfig
     )
     await build(buildConfig)
   }
