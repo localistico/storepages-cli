@@ -10,8 +10,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 
 let liquid
 beforeAll(function () {
+  const themePath = resolve(__dirname, './stub/theme')
   liquid = new Liquid({
-    root: resolve(__dirname, './stub/theme'),
+    root: themePath,
+    globals: {
+      assetsPath: [`${themePath}/assets`],
+    },
     extname: '.liquid',
   })
   liquid.plugin(plugin)

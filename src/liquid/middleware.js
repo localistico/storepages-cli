@@ -3,8 +3,8 @@ import {
   getLiquidInstance,
   getThemeConfig,
   getTemplate,
-  getData,
   getDataContext,
+  getApiLocations,
 } from './helpers.js'
 import { pagesApiLocationRE, pagesApiLocationsRE } from './constants.js'
 
@@ -14,9 +14,8 @@ import { pagesApiLocationRE, pagesApiLocationsRE } from './constants.js'
  * @param {string} dataPath
  * @returns {Promise<Function>}
  */
-export function templatesMiddleware(themePath, dataPath) {
-  const liquid = getLiquidInstance(themePath)
-  const data = getData(dataPath)
+export function templatesMiddleware(themePath, dataPath, tempPath) {
+  const liquid = getLiquidInstance(themePath, tempPath)
   return async (req, res, next) => {
     try {
       const theme = getThemeConfig(themePath)
@@ -52,13 +51,22 @@ export function templatesMiddleware(themePath, dataPath) {
       }
       // Pages API Locations
       else if (url.pathname.match(pagesApiLocationsRE)) {
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify(data))
-      }
-      // Pages API Location
-      else if (url.pathname.match(pagesApiLocationRE)) {
-        res.setHeader('Content-Type', 'application/json')
-        res.end(JSON.stringify(data.locations[0]))
+        const ctx = await getDataContext(dataPath, 'locator')
+        const locations = getApiLocations(ctx.business, ctx.locations)
+        const id = url.pathname.match(pagesApiLocationRE).groups.id
+        if (id) {
+          const location = locations.find((l) => l.id === id)
+          if (location) {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify(location))
+          } else {
+            res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ error: 'Not found' }))
+          }
+        } else {
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ locations }))
+        }
       }
       // Theme templates
       else {
@@ -71,7 +79,7 @@ export function templatesMiddleware(themePath, dataPath) {
           })
           .shift()
         if (template) {
-          const ctx = await getDataContext(dataPath, template.type, data)
+          const ctx = await getDataContext(dataPath, template.type)
           ctx.canonical_tag = `<link rel="canonical" href="/${template.key}" />`
           ctx.canonical_url = `/${template.key}`
           ctx.theme_variables = theme.variables || {}
@@ -118,12 +126,11 @@ export function templatesMiddleware(themePath, dataPath) {
  * @param {string} dataPath
  * @returns {Promise<Function>}
  */
-export function notFoundMiddleware(themePath, dataPath) {
-  const liquid = getLiquidInstance(themePath)
-  const data = getData(dataPath)
+export function notFoundMiddleware(themePath, dataPath, tempPath) {
+  const liquid = getLiquidInstance(themePath, tempPath)
   return async (req, res) => {
     try {
-      const ctx = await getDataContext(dataPath, 'locator', data)
+      const ctx = await getDataContext(dataPath, 'locator')
       const html = await liquid.renderFile('404', ctx)
       res.setHeader('Content-Type', 'text/html')
       res.statusCode = 404

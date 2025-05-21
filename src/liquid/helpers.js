@@ -3,17 +3,19 @@ import { readFileSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'url'
 import { Liquid } from 'liquidjs'
 import { plugin } from './plugin.js'
-import { getCountry } from './timezones.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 /**
  * Returns a instance of liquid engine for the themepath
  * @param {string} themePath
  */
-export function getLiquidInstance(themePath) {
+export function getLiquidInstance(themePath, tempPath) {
   // Init the liquid engine
   const liquid = new Liquid({
     root: themePath,
+    globals: {
+      assetsPath: [`${themePath}/assets`, `${tempPath}/assets`],
+    },
     extname: '.liquid',
   })
   // Add store pages tags and filters
@@ -42,61 +44,54 @@ export function getThemeConfig(themePath) {
   return JSON.parse(readFileSync(themeConfigFilepath, 'utf-8'))
 }
 
-/**
- * Returns JSON from data file
- * @param {string} dataPath
- */
-export function getData(dataPath) {
-  const dataFilePath = join(dataPath, 'pages_api_locations.json')
-  if (existsSync(dataFilePath)) {
-    const { locations } = getParsedJsonFromFile(dataFilePath)
-    // Get Areas
-    const groupByCountry = groupBy(locations, (l) => getCountry(l.timezone))
-    const groupByAdministrativeAreaLevel2 = groupBy(locations, (l) => l.region)
-    const groupByCity = groupBy(locations, (l) => l.locality)
-    const countryAreas = Object.keys(groupByCountry).map((key) => {
-      return { name: key, type: 'country' }
-    })
-    const administrativeAreaLevel2Areas = Object.keys(
-      groupByAdministrativeAreaLevel2
-    ).map((key) => {
-      return { name: key, type: 'administrative_area_level2' }
-    })
-    const cityAreas = Object.keys(groupByCity).map((key) => {
-      return { name: key, type: 'city' }
-    })
-    // Get Business
-    const business = {
-      exposed_custom_attributes_in_api: Object.keys(
-        locations[0].custom_attributes
-      ),
-    }
-    // Return data
+export function getApiLocations(business, locations) {
+  return locations.map((location) => {
+    const {
+      id,
+      lat,
+      lng,
+      timezone,
+      open_status,
+      external_id,
+      name,
+      street_address,
+      locality,
+      region,
+      postcode,
+      phone,
+      hours,
+      special_hours,
+    } = location
+    const pages = location.pages.reduce((group, page) => {
+      group[page.template_key] = page.template_key
+      return group
+    }, {})
+    const custom_attributes = business.exposed_custom_attributes_in_api.reduce(
+      (group, attr) => {
+        group[attr] = location[attr] ?? null
+        return group
+      },
+      {}
+    )
     return {
-      business,
-      locations,
-      areas: [...countryAreas, ...administrativeAreaLevel2Areas, ...cityAreas],
+      id,
+      lat,
+      lng,
+      timezone,
+      open_status,
+      external_id,
+      name,
+      street_address,
+      locality,
+      region,
+      postcode,
+      phone,
+      hours,
+      special_hours,
+      pages,
+      custom_attributes,
     }
-  } else {
-    const fallbackDataPath = join(resolve(__dirname, '../data'), 'data.json')
-    return getParsedJsonFromFile(fallbackDataPath)
-  }
-}
-
-/**
- * Returns grouped locations
- * @param {string} items
- * @param {string} callbackFn
- */
-function groupBy(items, callbackFn) {
-  return items.reduce((group, item) => {
-    const key = callbackFn(item)
-    if (key) {
-      group[key] = group[key] ?? []
-      group[key].push(item)
-    }
-    return group
-  }, {})
+  })
 }
 
 /**
@@ -104,7 +99,7 @@ function groupBy(items, callbackFn) {
  * @param {string} dataPath
  * @param {string} dataType
  */
-export async function getDataContext(dataPath, dataType, locations = []) {
+export async function getDataContext(dataPath, dataType) {
   const dataFilePath = join(dataPath, `${dataType}.json`)
   if (existsSync(dataFilePath)) {
     const context = readFileSync(dataFilePath)
@@ -112,7 +107,7 @@ export async function getDataContext(dataPath, dataType, locations = []) {
   }
   const fallbackDataPath = join(resolve(__dirname, `./data`), `${dataType}.js`)
   const module = await import(fallbackDataPath)
-  return module.default(locations)
+  return module.default()
 }
 
 /**
@@ -166,4 +161,12 @@ export function flatten(target) {
   step(target)
 
   return output
+}
+
+export function slugify(title, { separator = '-' } = {}) {
+  let slug = title.normalize()
+  slug = slug.replace(/[^A-Za-z0-9\s\.]/g, '').trim()
+  slug = slug.replace(/\.|\s+/g, separator)
+  slug = slug.toLowerCase()
+  return slug
 }

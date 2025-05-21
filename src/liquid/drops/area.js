@@ -1,12 +1,5 @@
 import { Drop } from 'liquidjs'
-
-function slugify(title, { separator = '-' } = {}) {
-  let slug = title.normalize()
-  slug = slug.replace(/[^A-Za-z0-9\s]/g, '').trim()
-  slug = slug.replace(/\s+/g, separator)
-  slug = slug.toLowerCase()
-  return slug
-}
+import { slugify } from '../helpers.js'
 
 export default class AreaDrop extends Drop {
   constructor(attrs) {

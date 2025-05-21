@@ -16,7 +16,7 @@ Since our plugin is a NPM package but not in a public packages server, the packa
 ```
 "dependencies": {
   ...
-  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:1.3.1"
+  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:2.0.0"
   ...
 }
 ```
@@ -27,8 +27,7 @@ Open your `package.json` file and add the following `scripts`:
 {
   "scripts": {
     "dev": "storepages dev",
-    "build": "storepages build",
-    "data": "storepages data --host=null-island-cafe.localisti.co"
+    "build": "storepages build"
   }
 }
 ```
@@ -41,9 +40,6 @@ These scripts refer to the different stages of developing a theme.
 
 - `storepages build`: Build a Store Page Theme and create a Zip file ready for production.<br>
   Avoid JS & CSS assets minification with `--no-minify`
-
-- `storepages data`: Download Store Page information from pages_api/locations to create a partial mock of your pages.<br>
-  Change the domain with `--host`
 
 ## Directories
 
@@ -80,13 +76,12 @@ The whole theme is defined inside the theme folder by the following file structu
 
 ### The `data` directory
 
-In case you want to preview the same data than the platform you need to download the information from `pages_api/v1/locations` and the `variables` within a page.
+In case you want to preview the same data than the platform you need to download the information from the portal.
 
-1. Download `pages_api/v1/locations` with `npm run data`.
-2. Go to https://storepages.localistico.com/app
-3. Go to pages and select the page
-4. Click `<> View json` to download the data
-5. Create the json file with corresponding template `type`:
+1. Go to https://storepages.localistico.com/app
+2. Go to pages and select the page
+3. Click `<> View json` to download the data
+4. Create the json file with corresponding template `type`:
 
 - `locator.json`
 - `store.json`
