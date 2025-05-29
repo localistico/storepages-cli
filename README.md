@@ -16,7 +16,7 @@ Since our plugin is a NPM package but not in a public packages server, the packa
 ```
 "dependencies": {
   ...
-  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:2.0.0"
+  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:2.1.0"
   ...
 }
 ```

@@ -18,7 +18,6 @@ export default {
       const findPath = assetsPath.find((path) =>
         existsSync(join(path, assetName))
       )
-      console.log(findPath)
       return readFileSync(join(findPath, assetName))
     } else {
       throw Error(`File extension "${ext}" not allowed for asset_content`)

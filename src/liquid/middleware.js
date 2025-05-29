@@ -7,6 +7,7 @@ import {
   getApiLocations,
 } from './helpers.js'
 import { pagesApiLocationRE, pagesApiLocationsRE } from './constants.js'
+import { getLocaleNativeName } from './locales.js'
 
 /**
  * Templates Middleware
@@ -43,10 +44,19 @@ export function templatesMiddleware(themePath, dataPath, tempPath) {
         (!isDefaultLocale && url.pathname === `/${currentLocale}`)
       ) {
         res.end(
-          await liquid.parseAndRender(getTemplate('index'), {
-            templates,
-            urlPrefix,
-          })
+          await liquid.parseAndRender(
+            getTemplate('index'),
+            {
+              templates,
+            },
+            {
+              globals: {
+                locale: currentLocale,
+                published_locales,
+                urlPrefix,
+              },
+            }
+          )
         )
       }
       // Pages API Locations
@@ -86,7 +96,7 @@ export function templatesMiddleware(themePath, dataPath, tempPath) {
           ctx.published_locales =
             theme.published_locales.map((l) => ({
               code: l,
-              name: `Locale ${l.toUpperCase()} name`,
+              name: getLocaleNativeName(l) ?? `Locale ${l.toUpperCase()} name`,
               url: `/${l}/${template.key}`,
             })) || []
           ctx.locale = currentLocale
