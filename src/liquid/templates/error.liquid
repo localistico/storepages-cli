@@ -25,19 +25,58 @@
         font-size: 14px;
         line-height: 20px;
         padding: 40px;
+        max-width: 900px;
       }
 
       h1 {
-        font-size: 16px;
+        font-size: 18px;
+        font-weight: 700;
         color: #B00020;
+        margin-bottom: 8px;
       }
 
-      pre {
-        background-color: #FFD5DD;
+      .badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 600;
+        background-color: #B00020;
+        color: #fff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        margin-bottom: 16px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .location {
+        font-size: 13px;
+        color: #555;
+        margin-bottom: 20px;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      }
+
+      .location span {
+        color: #B00020;
+        font-weight: 600;
+      }
+
+      .message {
+        background-color: #FFF5F5;
+        border-left: 4px solid #B00020;
         margin: 20px 0;
-        padding: 20px;
+        padding: 16px 20px;
         white-space: pre-wrap;
-        border-radius: 8px;
+        border-radius: 0 8px 8px 0;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 13px;
+        color: #1a1a1a;
+        word-break: break-word;
+      }
+
+      .note {
+        font-size: 12px;
+        color: #888;
+        margin-top: 24px;
       }
 
       a {
@@ -46,8 +85,17 @@
     </style>
   </head>
   <body>
+    <div class="badge">{{ errorName }}</div>
     <h1>Error processing the template</h1>
-    <pre><code>{{ errorDescription }}</code></pre>
-    <p>This screen is only visible in development. It will no appear if the theme crashes in production.</p>
+
+    {% if errorFile %}
+      <p class="location">
+        {{ errorFile }}{% if errorLine %} &mdash; line <span>{{ errorLine }}</span>{% if errorCol %}, col <span>{{ errorCol }}</span>{% endif %}{% endif %}
+      </p>
+    {% endif %}
+
+    <pre class="message"><code>{{ errorMessage }}</code></pre>
+
+    <p class="note">This screen is only visible in development. It will not appear if the theme crashes in production.</p>
   </body>
 </html>

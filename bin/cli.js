@@ -24,6 +24,7 @@ program
     'The esbuild config file.',
     './esbuild.config.js'
   )
+  .option('--port <number>', 'The port to run the dev server on.', '3000')
   .action(dev)
 
 program
