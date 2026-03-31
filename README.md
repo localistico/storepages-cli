@@ -16,7 +16,7 @@ Since our plugin is a NPM package but not in a public packages server, the packa
 ```
 "dependencies": {
   ...
-  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:2.1.0"
+  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:3.0.0"
   ...
 }
 ```
@@ -36,10 +36,31 @@ Open your `package.json` file and add the following `scripts`:
 
 These scripts refer to the different stages of developing a theme.
 
-- `storepages dev`: Preview a Store Page Theme with hot reloading.
+### `storepages dev`
 
-- `storepages build`: Build a Store Page Theme and create a Zip file ready for production.<br>
-  Avoid JS & CSS assets minification with `--no-minify`
+Preview a Store Page Theme with hot reloading.
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--theme-path <path>` | `./theme` | Path to the theme directory |
+| `--source-path <path>` | `./src` | Path to the source directory |
+| `--temp-path <path>` | `./.temp` | Path to build the source directory |
+| `--data-path <path>` | `./data` | Path to the data directory |
+| `--esbuild-config <filepath>` | `./esbuild.config.js` | Custom esbuild config file |
+| `--port <number>` | `3000` | Port to run the dev server on |
+
+### `storepages build`
+
+Build a Store Page Theme and create a Zip file ready for production.
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--theme-path <path>` | `./theme` | Path to the theme directory |
+| `--source-path <path>` | `./src` | Path to the source directory |
+| `--temp-path <path>` | `./.temp` | Path to build the source directory |
+| `--build-path <path>` | `./dist` | Path to the build output |
+| `--esbuild-config <filepath>` | `./esbuild.config.js` | Custom esbuild config file |
+| `--no-minify` | — | Skip JS & CSS minification |
 
 ## Directories
 
@@ -110,5 +131,5 @@ export default esbuildConfig
 ## Run the development server
 
 1. Run `npm run dev` to start the development server.
-2. Visit `http://localhost:3000` to view the list of available templates.
+2. Visit `http://localhost:3000` (or your custom `--port`) to view the list of available templates.
 3. Edit a file and save it to see the updated result in your browser.
