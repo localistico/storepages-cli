@@ -5,7 +5,7 @@ import { context } from 'esbuild'
 import { getBuildConfig } from './build.js'
 
 export default async function (
-  { themePath, sourcePath, dataPath, tempPath, esbuildConfig },
+  { themePath, sourcePath, dataPath, tempPath, esbuildConfig, port },
   command
 ) {
   const bs = create()
@@ -34,6 +34,7 @@ export default async function (
     open: false,
     notify: false,
     ui: false,
+    port: parseInt(port, 10),
     middleware: [templatesMiddleware(themePath, dataPath, tempPath)],
     logPrefix: 'Store Pages',
     callbacks: {

@@ -119,12 +119,10 @@ export function templatesMiddleware(themePath, dataPath, tempPath) {
           next()
         }
       }
-    } catch (errorDescription) {
+    } catch (err) {
       res.statusCode = 500
       res.end(
-        await liquid.parseAndRender(getTemplate('error'), {
-          errorDescription,
-        })
+        await liquid.parseAndRender(getTemplate('error'), buildErrorContext(err))
       )
     }
   }
@@ -145,13 +143,21 @@ export function notFoundMiddleware(themePath, dataPath, tempPath) {
       res.setHeader('Content-Type', 'text/html')
       res.statusCode = 404
       res.end(html)
-    } catch (errorDescription) {
+    } catch (err) {
       res.statusCode = 500
       res.end(
-        await liquid.parseAndRender(getTemplate('error'), {
-          errorDescription,
-        })
+        await liquid.parseAndRender(getTemplate('error'), buildErrorContext(err))
       )
     }
+  }
+}
+
+function buildErrorContext(err) {
+  return {
+    errorName: err.name ?? 'Error',
+    errorMessage: err.message ?? String(err),
+    errorFile: err.token?.file ?? err.file ?? null,
+    errorLine: err.token?.line ?? err.line ?? null,
+    errorCol: err.token?.col ?? err.col ?? null,
   }
 }
