@@ -13,6 +13,7 @@ Command-line interface for local development of Store Pages themes. Preview temp
 - Translation filter (`t`) backed by locale JSON files
 - ZIP export with JS & CSS minification for production deployment
 - Configurable dev server port with `--port`
+- Remote snippet auto-fetching — snippets defined in `theme.json` are downloaded on `dev` or `build` if not already present locally
 - Rich error pages in development showing file, line, and column information
 
 ## Installation
@@ -147,6 +148,7 @@ The theme configuration file is required and must be placed at `theme/theme.json
 | `published_locales` | string[] | All enabled locales — each gets a URL prefix (e.g. `/es/`) |
 | `templates` | array | List of page template definitions |
 | `variables` | object | Custom key/value pairs, accessible in templates as `theme_variables` |
+| `remote_snippets` | array | Snippets to auto-fetch from remote URLs before `dev` or `build` |
 
 ### Template fields
 
@@ -156,6 +158,35 @@ The theme configuration file is required and must be placed at `theme/theme.json
 | `type` | string | Data context type — determines which `data/*.json` file loads |
 | `template` | string | Liquid file path relative to the theme directory |
 | `content_type` | string | HTTP content type (e.g. `text/html`) |
+
+### `remote_snippets`
+
+Defines snippets to be fetched from remote URLs before `dev` or `build` runs. The CLI checks whether the file already exists in `theme/remote_snippets/` — if not, it downloads the content from `source` and saves it as `{key}.liquid`. Re-running `dev` or `build` skips snippets that are already present.
+
+Fetched snippets take priority over files in `theme/snippets/` (see the [`snippet`](#snippet) tag).
+
+```json
+{
+  "remote_snippets": [
+    {
+      "name": "remote-common-mdd",
+      "key": "remote-common-mdd",
+      "source": "https://www.example.com/snippets/mdd/"
+    },
+    {
+      "name": "remote-common-footer",
+      "key": "remote-common-footer",
+      "source": "https://www.example.com/snippets/footer/"
+    }
+  ]
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Display name used in log output |
+| `key` | string | Filename used when saving — stored as `remote_snippets/{key}.liquid` |
+| `source` | string | URL to fetch the snippet content from |
 
 ### Valid `type` values
 
@@ -195,7 +226,7 @@ Inlines the raw content of an asset (`.css`, `.js`, or `.svg`) directly into the
 
 ### `snippet`
 
-Includes a Liquid snippet from `theme/snippets/` and passes named parameters to it. If a matching file exists in `theme/remote_snippets/`, it takes priority.
+Includes a Liquid snippet from `theme/snippets/` and passes named parameters to it. If a matching file exists in `theme/remote_snippets/`, it takes priority. Remote snippets defined in `theme.json` are fetched automatically on startup — see [`remote_snippets`](#remote_snippets).
 
 ```liquid
 {% snippet 'header' %}

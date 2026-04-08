@@ -4,7 +4,7 @@ import { basename } from 'node:path'
 import { pathToFileURL } from 'url'
 import { zip } from 'zip-a-folder'
 import { build } from 'esbuild'
-import { getThemeConfig, slugify } from './liquid/helpers.js'
+import { getThemeConfig, slugify, fetchRemoteSnippets } from './liquid/helpers.js'
 import packageJson from "../package.json" with { type: "json" }
 
 function getBanner(theme) {
@@ -53,6 +53,7 @@ export default async function (
   { themePath, sourcePath, tempPath, buildPath, esbuildConfig, minify },
   command
 ) {
+  await fetchRemoteSnippets(themePath)
   const theme = getThemeConfig(themePath)
   rmSync(buildPath, { force: true, recursive: true })
   const buildThemePath = `${buildPath}/${basename(themePath)}`

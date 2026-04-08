@@ -1,5 +1,5 @@
 import { resolve, join, dirname } from 'node:path'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'url'
 import { Liquid } from 'liquidjs'
 import { plugin } from './plugin.js'
@@ -42,6 +42,29 @@ export function getTemplate(templateName) {
 export function getThemeConfig(themePath) {
   const themeConfigFilepath = join(themePath, 'theme.json')
   return JSON.parse(readFileSync(themeConfigFilepath, 'utf-8'))
+}
+
+/**
+ * Fetches remote snippets defined in theme.json if not already present on disk
+ * @param {string} themePath
+ */
+export async function fetchRemoteSnippets(themePath) {
+  const theme = getThemeConfig(themePath)
+  const remoteSnippets = theme.remote_snippets ?? []
+  if (remoteSnippets.length === 0) return
+
+  const remoteSnippetsDir = join(themePath, 'remote_snippets')
+  mkdirSync(remoteSnippetsDir, { recursive: true })
+
+  for (const snippet of remoteSnippets) {
+    const filePath = join(remoteSnippetsDir, `${snippet.key}.liquid`)
+    if (!existsSync(filePath)) {
+      console.log(`[remote_snippets] Fetching "${snippet.name}" from ${snippet.source}`)
+      const response = await fetch(snippet.source)
+      const html = await response.text()
+      writeFileSync(filePath, html, 'utf-8')
+    }
+  }
 }
 
 export function getApiLocations(business, locations) {
