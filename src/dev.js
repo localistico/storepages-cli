@@ -22,7 +22,7 @@ export default async function (
     const ctx = await context(buildConfig)
     await ctx.rebuild()
     bs.watch(
-      `${sourcePath}/**/*.{js,ts,jsx,tsx}`,
+      `${sourcePath}/**/*.{js,ts,jsx,tsx,css}`,
       { ignoreInitial: true },
       async function () {
         await ctx.rebuild()

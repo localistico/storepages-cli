@@ -1,6 +1,6 @@
 {
   "name": "storepages-cli",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Command-line interface tool for local development of store pages themes.",
   "type": "module",
   "engines": {
@@ -21,6 +21,8 @@
     "commander": "^13.1.0",
     "csv-parse": "^5.6.0",
     "esbuild": "^0.25.4",
+    "esbuild-postcss": "^0.0.4",
+    "postcss": "^8.5.3",
     "liquidjs": "^10.21.0",
     "zip-a-folder": "^3.1.9"
   },

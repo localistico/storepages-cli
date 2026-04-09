@@ -4,6 +4,7 @@ import { basename } from 'node:path'
 import { pathToFileURL } from 'url'
 import { zip } from 'zip-a-folder'
 import { build } from 'esbuild'
+import postcssPlugin from 'esbuild-postcss'
 import { getThemeConfig, slugify, fetchRemoteSnippets } from './liquid/helpers.js'
 import packageJson from "../package.json" with { type: "json" }
 
@@ -24,6 +25,7 @@ export async function getBuildConfig(command, themePath, sourcePath, tempPath, e
       `${sourcePath}/*.ts`,
       `${sourcePath}/*.jsx`,
       `${sourcePath}/*.tsx`,
+      `${sourcePath}/*.css`,
     ],
     banner: {
       js: banner,
@@ -33,6 +35,7 @@ export async function getBuildConfig(command, themePath, sourcePath, tempPath, e
     sourcemap: 'inline',
     logLevel: 'silent',
     outdir: `${tempPath}/assets`,
+    plugins: [postcssPlugin()],
   }
   if (existsSync(esbuildConfig)) {
     const { default: config } = await import(pathToFileURL(esbuildConfig))
@@ -44,6 +47,10 @@ export async function getBuildConfig(command, themePath, sourcePath, tempPath, e
     return {
       ...defaultConfig,
       ...customConfig,
+      plugins: [
+        ...(defaultConfig.plugins ?? []),
+        ...(customConfig.plugins ?? []),
+      ],
     }
   }
   return defaultConfig

@@ -9,6 +9,7 @@ Command-line interface for local development of Store Pages themes. Preview temp
 - Live dev server with hot reload — changes to Liquid templates and assets are reflected instantly
 - Multi-locale preview with URL-based switching (e.g. `/es/store`)
 - Asset bundling via [esbuild](https://esbuild.github.io/) — JS, TS, JSX, TSX, and CSS with inline sourcemaps in dev
+- Built-in [PostCSS](https://postcss.org/) support — drop a `postcss.config.js` in your project root to enable Tailwind CSS, autoprefixer, and more
 - Custom esbuild config support for advanced bundling setups
 - Translation filter (`t`) backed by locale JSON files
 - ZIP export with JS & CSS minification for production deployment
@@ -22,7 +23,7 @@ Since this package is not published to npm, install it directly from GitHub in y
 
 ```json
 "dependencies": {
-  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:2.1.0"
+  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:2.2.0"
 }
 ```
 
@@ -387,6 +388,38 @@ If a data file is missing, the CLI falls back to built-in placeholder data so te
 Place JavaScript, TypeScript, JSX, TSX, and CSS source files in `src/`. Only **root-level files** are used as entry points — subdirectory files are bundled as imports, not compiled separately.
 
 Compiled output goes to `.temp/assets/` during development and is copied into the theme on build. Sourcemaps are enabled inline in dev mode and removed in production builds.
+
+### PostCSS
+
+PostCSS is built in. To enable it, add a `postcss.config.js` to your project root and install any plugins you need:
+
+```sh
+npm install --save-dev postcss autoprefixer
+```
+
+```js
+// postcss.config.js
+export default {
+  plugins: {
+    autoprefixer: {},
+  },
+}
+```
+
+CSS files at the root of `src/` are compiled as standalone entry points. To use PostCSS with Tailwind CSS:
+
+```sh
+npm install --save-dev postcss tailwindcss @tailwindcss/postcss
+```
+
+```js
+// postcss.config.js
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+```
 
 ### Custom esbuild config
 
