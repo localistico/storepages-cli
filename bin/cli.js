@@ -3,6 +3,7 @@
 import { Command } from 'commander'
 import dev from '../src/dev.js'
 import build from '../src/build.js'
+import start from '../src/start.js'
 
 process.removeAllListeners('warning')
 
@@ -45,5 +46,13 @@ program
   )
   .option('--no-minify', 'Avoid JS & CSS assets minification')
   .action(build)
+
+program
+  .command('start')
+  .description('Serve the built Store Page Theme.')
+  .option('--build-path <path>', 'The path to the built theme directory.', './dist/theme')
+  .option('--data-path <path>', 'The path to your data directory.', './data')
+  .option('--port <number>', 'The port to run the server on.', '3000')
+  .action(start)
 
 program.parseAsync(process.argv)

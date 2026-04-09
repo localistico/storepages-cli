@@ -39,7 +39,8 @@ Add the following scripts to your `package.json`:
 {
   "scripts": {
     "dev": "storepages dev",
-    "build": "storepages build"
+    "build": "storepages build",
+    "start": "storepages start"
   }
 }
 ```
@@ -90,6 +91,26 @@ npm run build
 
 ```
 storepages build --no-minify
+```
+
+### `storepages start`
+
+Serves a previously built theme from the `./dist/theme` directory. No compilation or file watching — useful for previewing the production output locally.
+
+```
+npm run start
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--build-path <path>` | `./dist/theme` | Path to the built theme directory |
+| `--data-path <path>` | `./data` | Path to local data JSON files |
+| `--port <number>` | `3000` | Port to run the server on |
+
+**Example — serve a custom build path:**
+
+```
+storepages start --build-path ./dist/my-theme
 ```
 
 ## Project structure

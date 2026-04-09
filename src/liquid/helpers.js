@@ -11,11 +11,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
  */
 export function getLiquidInstance(themePath, tempPath) {
   // Init the liquid engine
+  const assetsPath = [`${themePath}/assets`]
+  if (tempPath) assetsPath.push(`${tempPath}/assets`)
   const liquid = new Liquid({
     root: themePath,
-    globals: {
-      assetsPath: [`${themePath}/assets`, `${tempPath}/assets`],
-    },
+    globals: { assetsPath },
     extname: '.liquid',
   })
   // Add store pages tags and filters
