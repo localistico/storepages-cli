@@ -9,10 +9,12 @@ Command-line interface for local development of Store Pages themes. Preview temp
 - Live dev server with hot reload — changes to Liquid templates and assets are reflected instantly
 - Multi-locale preview with URL-based switching (e.g. `/es/store`)
 - Asset bundling via [esbuild](https://esbuild.github.io/) — JS, TS, JSX, TSX, and CSS with inline sourcemaps in dev
+- Built-in [PostCSS](https://postcss.org/) support — drop a `postcss.config.js` in your project root to enable Tailwind CSS, autoprefixer, and more
 - Custom esbuild config support for advanced bundling setups
 - Translation filter (`t`) backed by locale JSON files
 - ZIP export with JS & CSS minification for production deployment
 - Configurable dev server port with `--port`
+- Remote snippet auto-fetching — snippets defined in `theme.json` are downloaded on `dev` or `build` if not already present locally
 - Rich error pages in development showing file, line, and column information
 
 ## Installation
@@ -21,7 +23,7 @@ Since this package is not published to npm, install it directly from GitHub in y
 
 ```json
 "dependencies": {
-  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:2.1.0"
+  "storepages-cli": "https://github.com/localistico/storepages-cli.git#semver:2.2.0"
 }
 ```
 
@@ -37,7 +39,8 @@ Add the following scripts to your `package.json`:
 {
   "scripts": {
     "dev": "storepages dev",
-    "build": "storepages build"
+    "build": "storepages build",
+    "start": "storepages start"
   }
 }
 ```
@@ -88,6 +91,26 @@ npm run build
 
 ```
 storepages build --no-minify
+```
+
+### `storepages start`
+
+Serves a previously built theme from the `./dist/theme` directory. No compilation or file watching — useful for previewing the production output locally.
+
+```
+npm run start
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--build-path <path>` | `./dist/theme` | Path to the built theme directory |
+| `--data-path <path>` | `./data` | Path to local data JSON files |
+| `--port <number>` | `3000` | Port to run the server on |
+
+**Example — serve a custom build path:**
+
+```
+storepages start --build-path ./dist/my-theme
 ```
 
 ## Project structure
@@ -147,6 +170,7 @@ The theme configuration file is required and must be placed at `theme/theme.json
 | `published_locales` | string[] | All enabled locales — each gets a URL prefix (e.g. `/es/`) |
 | `templates` | array | List of page template definitions |
 | `variables` | object | Custom key/value pairs, accessible in templates as `theme_variables` |
+| `remote_snippets` | array | Snippets to auto-fetch from remote URLs before `dev` or `build` |
 
 ### Template fields
 
@@ -156,6 +180,35 @@ The theme configuration file is required and must be placed at `theme/theme.json
 | `type` | string | Data context type — determines which `data/*.json` file loads |
 | `template` | string | Liquid file path relative to the theme directory |
 | `content_type` | string | HTTP content type (e.g. `text/html`) |
+
+### `remote_snippets`
+
+Defines snippets to be fetched from remote URLs before `dev` or `build` runs. The CLI checks whether the file already exists in `theme/remote_snippets/` — if not, it downloads the content from `source` and saves it as `{key}.liquid`. Re-running `dev` or `build` skips snippets that are already present.
+
+Fetched snippets take priority over files in `theme/snippets/` (see the [`snippet`](#snippet) tag).
+
+```json
+{
+  "remote_snippets": [
+    {
+      "name": "remote-common-mdd",
+      "key": "remote-common-mdd",
+      "source": "https://www.example.com/snippets/mdd/"
+    },
+    {
+      "name": "remote-common-footer",
+      "key": "remote-common-footer",
+      "source": "https://www.example.com/snippets/footer/"
+    }
+  ]
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Display name used in log output |
+| `key` | string | Filename used when saving — stored as `remote_snippets/{key}.liquid` |
+| `source` | string | URL to fetch the snippet content from |
 
 ### Valid `type` values
 
@@ -195,7 +248,7 @@ Inlines the raw content of an asset (`.css`, `.js`, or `.svg`) directly into the
 
 ### `snippet`
 
-Includes a Liquid snippet from `theme/snippets/` and passes named parameters to it. If a matching file exists in `theme/remote_snippets/`, it takes priority.
+Includes a Liquid snippet from `theme/snippets/` and passes named parameters to it. If a matching file exists in `theme/remote_snippets/`, it takes priority. Remote snippets defined in `theme.json` are fetched automatically on startup — see [`remote_snippets`](#remote_snippets).
 
 ```liquid
 {% snippet 'header' %}
@@ -356,6 +409,38 @@ If a data file is missing, the CLI falls back to built-in placeholder data so te
 Place JavaScript, TypeScript, JSX, TSX, and CSS source files in `src/`. Only **root-level files** are used as entry points — subdirectory files are bundled as imports, not compiled separately.
 
 Compiled output goes to `.temp/assets/` during development and is copied into the theme on build. Sourcemaps are enabled inline in dev mode and removed in production builds.
+
+### PostCSS
+
+PostCSS is built in. To enable it, add a `postcss.config.js` to your project root and install any plugins you need:
+
+```sh
+npm install --save-dev postcss autoprefixer
+```
+
+```js
+// postcss.config.js
+export default {
+  plugins: {
+    autoprefixer: {},
+  },
+}
+```
+
+CSS files at the root of `src/` are compiled as standalone entry points. To use PostCSS with Tailwind CSS:
+
+```sh
+npm install --save-dev postcss tailwindcss @tailwindcss/postcss
+```
+
+```js
+// postcss.config.js
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+}
+```
 
 ### Custom esbuild config
 

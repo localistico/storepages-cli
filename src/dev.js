@@ -3,11 +3,13 @@ import { create } from 'browser-sync'
 import { templatesMiddleware, notFoundMiddleware } from './liquid/middleware.js'
 import { context } from 'esbuild'
 import { getBuildConfig } from './build.js'
+import { fetchRemoteSnippets } from './liquid/helpers.js'
 
 export default async function (
   { themePath, sourcePath, dataPath, tempPath, esbuildConfig, port },
   command
 ) {
+  await fetchRemoteSnippets(themePath)
   const bs = create()
   if (existsSync(sourcePath)) {
     const buildConfig = await getBuildConfig(
@@ -20,7 +22,7 @@ export default async function (
     const ctx = await context(buildConfig)
     await ctx.rebuild()
     bs.watch(
-      `${sourcePath}/**/*.{js,ts,jsx,tsx}`,
+      `${sourcePath}/**/*.{js,ts,jsx,tsx,css}`,
       { ignoreInitial: true },
       async function () {
         await ctx.rebuild()
